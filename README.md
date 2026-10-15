@@ -1,2 +1,2 @@
 # bachyl-qa
-Testing management for bachyl web/android app
+Testing management for bachyl web/android app.
