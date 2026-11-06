@@ -1,0 +1,22 @@
+{
+  "$comment": "Manifest only. The frames themselves live in private storage (copyright): this public file holds the expected answers, never images. Example entries below are placeholders.",
+  "version": 1,
+  "cases": [
+    {
+      "id": "movie-001",
+      "image": "private://frames/movie-001.jpg",
+      "expected": { "title": "Example Title", "year": 2014, "imdbId": "tt0000000" },
+      "type": "movie",
+      "difficulty": "easy",
+      "source": "screenshot"
+    },
+    {
+      "id": "anime-001",
+      "image": "private://frames/anime-001.jpg",
+      "expected": { "title": "Example Anime", "year": 2026, "aliases": ["Example Anime Romaji"] },
+      "type": "anime",
+      "difficulty": "hard",
+      "source": "photo-of-screen"
+    }
+  ]
+}

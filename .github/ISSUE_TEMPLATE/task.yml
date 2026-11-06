@@ -1,0 +1,17 @@
+name: Task
+description: Documentation, infrastructure or any other work
+title: "[Task] "
+labels: ["type: task"]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: Done when
+    validations:
+      required: true

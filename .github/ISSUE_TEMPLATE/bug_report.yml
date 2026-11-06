@@ -1,0 +1,67 @@
+name: Bug report
+description: Something in Bachyl doesn't work as expected
+title: "[Bug] "
+labels: ["type: bug"]
+body:
+  - type: markdown
+    attributes:
+      value: One bug per issue. Never paste API keys, tokens or personal data.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options: [api, web, android, ai, ci]
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: App version, platform, device / browser, OS, language
+      placeholder: "Android 1.4.17, Pixel 7, Android 15, RU"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the app
+        2. Upload a frame
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: See docs/test-strategy.md §6
+      options:
+        - "critical: money or data at risk, or the main flow broken for everyone"
+        - "major: a main flow broken for some users, no workaround"
+        - "minor: works, but wrong or confusing"
+        - "trivial: cosmetic"
+    validations:
+      required: true
+  - type: input
+    id: frequency
+    attributes:
+      label: How often
+      placeholder: "Always / 3 of 10 tries / once"
+  - type: textarea
+    id: attachments
+    attributes:
+      label: Screenshots, logs, trace
+      description: A Playwright trace or a screen recording helps most. No frames from real films in public issues.

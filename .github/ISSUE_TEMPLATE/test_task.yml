@@ -1,0 +1,36 @@
+name: Test task
+description: Write or extend tests for an area
+title: "[Test] "
+labels: ["type: test"]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options: [api, web, android, ai, ci]
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: What to cover
+      description: Test cases (TC-…) or risks (R…) this task covers
+    validations:
+      required: true
+  - type: dropdown
+    id: level
+    attributes:
+      label: Level
+      options: [unit, api, web ui, mobile e2e, manual checklist, ai evaluation]
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: Done when
+      placeholder: |
+        - [ ] Tests pass 5 runs in a row (--repeat-each=5)
+        - [ ] No fixed sleeps, no CSS-chain selectors
+        - [ ] Test cases updated with links to the tests
+    validations:
+      required: true

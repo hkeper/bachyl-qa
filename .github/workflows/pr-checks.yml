@@ -1,0 +1,64 @@
+name: PR checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: pr-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  static:
+    name: Lint, types, unit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run typecheck
+      - name: Unit tests (AI evaluation metrics)
+        run: npm run test:unit
+
+  smoke:
+    name: API + web smoke against the app image
+    # Runs once the private app image is published (docs: README → "CI and the private app").
+    if: vars.BACHYL_IMAGE != ''
+    needs: static
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      BASE_URL: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Start the app in demo mode (no AI key, no paid calls)
+        run: |
+          echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ github.repository_owner }}" --password-stdin
+          docker run -d --name bachyl -p 3000:8080 -e PORT=8080 "${{ vars.BACHYL_IMAGE }}"
+          for i in $(seq 1 30); do curl -fs "$BASE_URL/api/health" && exit 0; sleep 2; done
+          docker logs bachyl; exit 1
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test --project=api --project=web-chromium --grep @smoke
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report-smoke
+          path: playwright-report/
+          retention-days: 14

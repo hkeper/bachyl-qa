@@ -1,0 +1,22 @@
+# Synced to GitHub by .github/workflows/repo-setup.yml
+- { name: "type: bug", color: "d73a4a", description: "Something doesn't work" }
+- { name: "type: test", color: "0e8a16", description: "Write or extend tests" }
+- { name: "type: task", color: "c5def5", description: "Infrastructure or other work" }
+- { name: "type: docs", color: "0075ca", description: "Documentation" }
+- {
+    name: "severity: critical",
+    color: "b60205",
+    description: "Money or data at risk, or main flow broken for everyone",
+  }
+- { name: "severity: major", color: "e99695", description: "Main flow broken for some users" }
+- { name: "severity: minor", color: "fbca04", description: "Works, but wrong or confusing" }
+- { name: "severity: trivial", color: "fef2c0", description: "Cosmetic" }
+- { name: "priority: P1", color: "5319e7", description: "Blocks a release" }
+- { name: "priority: P2", color: "8a63d2", description: "Should be done this sprint" }
+- { name: "priority: P3", color: "d4c5f9", description: "Nice to have" }
+- { name: "area: api", color: "1d76db", description: "" }
+- { name: "area: web", color: "1d76db", description: "" }
+- { name: "area: mobile", color: "1d76db", description: "" }
+- { name: "area: ai", color: "1d76db", description: "" }
+- { name: "area: ci", color: "1d76db", description: "" }
+- { name: "known-bug", color: "000000", description: "Reproduced by a test marked test.fail()" }
