@@ -1,0 +1,24 @@
+# Risk analysis
+
+Likelihood and impact are scored 1–3. Priority = likelihood × impact: **6–9 high**, 3–4 medium, 1–2 low. High-priority risks get automated tests first.
+
+| #   | Risk                                                      |  L  |  I  |   P   | How we test it                                                                                                                                          | Where                                              |
+| --- | --------------------------------------------------------- | :-: | :-: | :---: | ------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| R1  | Confident wrong answer (≥75%) shown as a match            |  3  |  3  | **9** | Nightly evaluation tracks the confident-error rate; UI tests check that <75% is labelled "Not sure" with candidates                                     | `ai-eval`, `scan-result.spec.ts`                   |
+| R2  | Daily limit or Pro bypassed by calling the API directly   |  2  |  3  | **6** | API tests: gated endpoints without a token or with a forged token, deep search without an account, webhook without its secret, unsigned reward callback | `access-control.spec.ts`, `identify-frame.spec.ts` |
+| R3  | AI costs spike (loops, retries, cache wiped on restart)   |  2  |  3  | **6** | Demo mode in every automated run; nightly run capped by dataset size and a separate key; budget alert outside tests                                     | strategy §4                                        |
+| R4  | A scan error leaves the user on a blank or stuck screen   |  2  |  3  | **6** | UI tests for every error code the server sends, plus an unknown 500                                                                                     | `scan-result.spec.ts`                              |
+| R5  | Layout breaks on a 320 px phone in Russian/Belarusian     |  3  |  2  | **6** | Overflow check on home and result screens in all three languages                                                                                        | `layout.spec.ts`                                   |
+| R6  | API contract changes and old app versions on phones break |  2  |  3  | **6** | Zod contract tests on every response; streaming format test; demo answer test                                                                           | `identify-frame.spec.ts`, `trending.spec.ts`       |
+| R7  | Android-only rendering bugs (white flash, WebView jank)   |  2  |  2  |   4   | Manual checklist on a real device; mobile E2E planned                                                                                                   | `test-cases/android.md`                            |
+| R8  | Personal data in the scan log or in logs                  |  1  |  3  |   3   | Review of what `/api/feedback` accepts; health endpoint exposes no secret values                                                                        | `health.spec.ts`, `feedback.spec.ts`               |
+| R9  | Sign-in by email code abused (brute force, spam)          |  2  |  2  |   4   | Code format validation, unknown code refused without a token, resend cooldown                                                                           | `email-auth.spec.ts`                               |
+| R10 | Wrong language or untranslated keys on screen             |  2  |  1  |   2   | Language detection and switch tests, raw-key check                                                                                                      | `i18n.spec.ts`                                     |
+| R11 | Metadata attaches the wrong film (namesakes, remakes)     |  2  |  2  |   4   | Contract tests on the lookup; accuracy run checks year as well as title                                                                                 | `metadata.spec.ts`, `ai-eval`                      |
+| R12 | Poster proxy fetches from an arbitrary host (SSRF)        |  1  |  3  |   3   | Host allow-list and path traversal tests                                                                                                                | `cors-and-routing.spec.ts`                         |
+| R13 | Accessibility: unreadable text, keyboard traps            |  2  |  1  |   2   | axe-core on home and result screens with a known-issue baseline                                                                                         | `accessibility.spec.ts`                            |
+
+## Accepted risks
+
+- **Google sign-in and real purchases** are tested by hand before a release, not automatically (see strategy §2).
+- **Firefox and WebKit** run in the full regression only, not on every PR: almost all users are on Android WebView (Chromium).

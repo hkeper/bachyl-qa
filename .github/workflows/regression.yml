@@ -1,0 +1,51 @@
+name: Regression
+
+# Full API + web suite in every browser. Triggered by the private app's build
+# (repository_dispatch) or by hand.
+on:
+  repository_dispatch:
+    types: [app-built]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  regression:
+    if: vars.BACHYL_IMAGE != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [api, web-chromium, web-firefox, web-webkit, web-mobile]
+    env:
+      BASE_URL: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Start the app in demo mode
+        run: |
+          echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ github.repository_owner }}" --password-stdin
+          docker run -d --name bachyl -p 3000:8080 -e PORT=8080 "${{ github.event.client_payload.image || vars.BACHYL_IMAGE }}"
+          for i in $(seq 1 30); do curl -fs "$BASE_URL/api/health" && exit 0; sleep 2; done
+          docker logs bachyl; exit 1
+      - name: Install the browser for this project
+        if: matrix.project != 'api'
+        run: |
+          case "${{ matrix.project }}" in
+            web-firefox) b=firefox ;; web-webkit) b=webkit ;; *) b=chromium ;;
+          esac
+          npx playwright install --with-deps "$b"
+      - run: npx playwright test --project=${{ matrix.project }}
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report-${{ matrix.project }}
+          path: playwright-report/
+          retention-days: 14

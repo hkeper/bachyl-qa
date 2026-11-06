@@ -1,0 +1,42 @@
+{
+  "name": "bachyl-qa",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Test management and automated tests for Bachyl, an AI movie / series / anime frame identifier.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "playwright test",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:api": "playwright test --project=api",
+    "test:unit": "playwright test --project=ai-eval",
+    "test:web": "playwright test --project=web-chromium",
+    "test:web:all": "playwright test --project=web-chromium --project=web-firefox --project=web-webkit --project=web-mobile",
+    "report": "playwright show-report",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "1.63.0",
+    "@types/node": "22.20.5",
+    "dotenv": "18.0.8",
+    "eslint": "10.13.0",
+    "eslint-plugin-playwright": "2.12.1",
+    "prettier": "3.9.10",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.72.0",
+    "zod": "4.6.7"
+  },
+  "overrides": {
+    "@axe-core/playwright": {
+      "playwright-core": "$@playwright/test"
+    }
+  }
+}
